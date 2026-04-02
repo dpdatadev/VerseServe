@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"log"
 	"strconv"
 	"strings"
 
@@ -73,9 +74,9 @@ func (g *GoBible) ParseReference(reference string) (References, error) {
 	chapterVersePart := parts[len(parts)-1]
 	chapterVerseParts := strings.Split(chapterVersePart, "-")
 
-	//log.Println("book", book)
-	//log.Println("chapterVersePart", chapterVersePart)
-	//log.Println("chapterVerseParts", chapterVerseParts)
+	log.Println("book", book)
+	log.Println("chapterVersePart", chapterVersePart)
+	log.Println("chapterVerseParts", chapterVerseParts)
 
 	var startChapter, endChapter, startVerse, endVerse int
 	chapterParts := strings.Split(chapterVerseParts[0], ":")
@@ -97,9 +98,9 @@ func (g *GoBible) ParseReference(reference string) (References, error) {
 		return nil, err
 	}
 
-	//log.Println("startVerse", startVerse)
+	log.Println("startVerse", startVerse)
 
-	//log.Println("len(chapterVerseParts)", len(chapterVerseParts))
+	log.Println("len(chapterVerseParts)", len(chapterVerseParts))
 
 	if len(chapterVerseParts) > 1 {
 		chapterParts := strings.Split(chapterVerseParts[1], ":")
@@ -135,11 +136,11 @@ func (g *GoBible) ParseReference(reference string) (References, error) {
 
 	var references []Reference
 	for chapter := startChapter; chapter <= endChapter; chapter++ {
-		//log.Println("chapter", chapter)
+		log.Println("chapter", chapter)
 		start, end := startVerse, endVerse
 
-		//log.Println("start", start)
-		//log.Println("end", end)
+		log.Println("start", start)
+		log.Println("end", end)
 
 		if chapter > startChapter {
 			start = 1

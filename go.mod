@@ -1,9 +1,10 @@
-module github.com/solafide-dev/gobible
-
+module github.com/dpdatadev/gobible
+//upgraded from github.com/solafide-dev/gobible v1.1.1 (1.19)
 go 1.24
 
 require (
 	github.com/pkg/errors v0.9.1
+	github.com/solafide-dev/gobible v1.1.1
 	github.com/stretchr/testify v1.8.4
 )
 

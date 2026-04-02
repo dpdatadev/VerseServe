@@ -24,10 +24,10 @@ There are a few ways to initialize a bible:
 b := NewGoBible()
 
 // Load a GoBible formatted JSON file
-b.Load("KJV.json")
+b.Load("data/KJV.json")
 
 // Load an alternate support format
-b.LoadFormat("WEB.xml", "osis")
+b.LoadFormat("data/WEB.xml", "osis")
 ```
 
 One you have a Bible object with some translations loaded into it, you can use this object in a few ways.
@@ -86,6 +86,47 @@ for _, r := range refs {
 }
 // Genesis 1:31 God saw everything that he had made, and, behold, it was very good. There was evening and there was morning, the sixth day.
 // Genesis 2:1 The heavens and the earth were finished, and all the host of them.
+```
+
+## Create HTTP Handlers to Embed Bible functionality into your web services or apps
+```go
+//server.go
+func VerseServeHTTP(w http.ResponseWriter, r *http.Request) {
+	// Initialize an empty GoBible object
+	b := NewGoBible()
+
+	// Load a GoBible formatted JSON file
+	b.Load("data/KJV.json")
+
+	ref := GetReference(r)
+	if ref == "" {
+		http.Error(w, "missing reference argument", http.StatusBadRequest)
+		return
+	}
+
+	log.Println("parsing BIBLE REF..", ref)
+	verses, err := b.ParseReference(ref)
+	if err != nil {
+		log.Println("failed to parse reference:", err)
+		http.Error(w, "invalid reference format", http.StatusBadRequest)
+		return
+	}
+	verseList := make([]ReferenceDTO, len(verses))
+	for i, v := range verses {
+		verseList[i] = ReferenceDTO{
+			Book:    v.Book,
+			Chapter: v.Chapter,
+			Verse:   v.Verse,
+			Text:    v.VerseRef.Text,
+		}
+	}
+
+	WriteHttpJson(verseList, w)
+}
+```
+# Now Query:
+```sh
+curl http://127.0.0.1:7777/verse?ref=Genesis%201:1-3
 ```
 
 ## Looking for Bibles?
