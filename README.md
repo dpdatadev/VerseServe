@@ -92,17 +92,18 @@ for _, r := range refs {
 ```go
 //server.go
 func VerseServeHTTP(w http.ResponseWriter, r *http.Request) {
-	// Initialize an empty GoBible object
-	b := NewGoBible()
-
-	// Load a GoBible formatted JSON file
-	b.Load("data/KJV.json")
 
 	ref := GetReference(r)
 	if ref == "" {
 		http.Error(w, "missing reference argument", http.StatusBadRequest)
 		return
 	}
+
+	// Initialize an empty GoBible object
+	b := NewGoBible()
+
+	// Load a GoBible formatted JSON file
+	b.Load("data/KJV.json")
 
 	log.Println("parsing BIBLE REF..", ref)
 	verses, err := b.ParseReference(ref)
@@ -111,6 +112,9 @@ func VerseServeHTTP(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "invalid reference format", http.StatusBadRequest)
 		return
 	}
+
+	verseMap := make(map[string][]ReferenceDTO)
+
 	verseList := make([]ReferenceDTO, len(verses))
 	for i, v := range verses {
 		verseList[i] = ReferenceDTO{
@@ -121,7 +125,9 @@ func VerseServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	WriteHttpJson(verseList, w)
+	verseMap["Verses"] = verseList
+
+	WriteHttpJson(verseMap, w)
 }
 ```
 ### Now Query:
