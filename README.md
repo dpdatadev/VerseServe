@@ -130,7 +130,7 @@ curl http://127.0.0.1:7777/verse?ref=Genesis%201:1-3
 ```
 ### Or using a Ruby client:
 ```ruby
- reference_response = HTTParty.get("http://127.0.1:7777/verse?ref=#{readings.join(',')}") #todo, can the server handler parse multiple verses?
+ reference_response = HTTParty.get("http://127.0.1:7777/verse?ref=#{readings.join(',')}")
  if reference_response.success?
 	Scrapers::ServiceUtils.debug_log("Successfully retrieved verse text from VerseServe API for readings: #{readings.join(', ')}")
 	verse_texts = reference_response.parsed_response['Verses']
