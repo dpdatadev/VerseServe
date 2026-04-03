@@ -128,6 +128,20 @@ func VerseServeHTTP(w http.ResponseWriter, r *http.Request) {
 ```sh
 curl http://127.0.0.1:7777/verse?ref=Genesis%201:1-3
 ```
+### Or using a Ruby client:
+```ruby
+ reference_response = HTTParty.get("http://127.0.1:7777/verse?ref=#{readings.join(',')}") #todo, can the server handler parse multiple verses?
+ if reference_response.success?
+	Scrapers::ServiceUtils.debug_log("Successfully retrieved verse text from VerseServe API for readings: #{readings.join(', ')}")
+	verse_texts = reference_response.parsed_response['Verses']
+	return_readings = readings.zip(verse_texts).map do |ref, text|
+		Bible::Reading.new(ref, text)
+ 	end
+ else
+        Scrapers::ServiceUtils.debug_log("Failed to retrieve verse text from VerseServe API for readings: #{readings.join(', ')}. HTTP Status: #{reference_response.code}. Falling back to manual parsing of readings without verse text.")
+        return_readings = manually_strip_readings(readings)
+ end
+```
 
 ## Looking for Bibles?
 
