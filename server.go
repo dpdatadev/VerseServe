@@ -2,10 +2,7 @@ package main
 
 /*
 	TODO, add KJV.db (Sqlite)
-	(parsing references and actually delivering the verses)
-	- Add a function to query the database and return the results
-	- Add a function to handle HTTP requests and return the results as JSON
-	- Add a function to handle errors and return appropriate HTTP status codes
+	TODO, add CLI functionality akin to https://github.com/dtjm/bible
 */
 
 import (
@@ -74,17 +71,18 @@ func GetReference(r *http.Request) string {
 }
 
 func VerseServeHTTP(w http.ResponseWriter, r *http.Request) {
-	// Initialize an empty GoBible object
-	b := NewGoBible()
-
-	// Load a GoBible formatted JSON file
-	b.Load("data/KJV.json")
 
 	ref := GetReference(r)
 	if ref == "" {
 		http.Error(w, "missing reference argument", http.StatusBadRequest)
 		return
 	}
+
+	// Initialize an empty GoBible object
+	b := NewGoBible()
+
+	// Load a GoBible formatted JSON file
+	b.Load("data/KJV.json")
 
 	log.Println("parsing BIBLE REF..", ref)
 	verses, err := b.ParseReference(ref)
@@ -93,6 +91,9 @@ func VerseServeHTTP(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "invalid reference format", http.StatusBadRequest)
 		return
 	}
+
+	verseMap := make(map[string][]ReferenceDTO)
+
 	verseList := make([]ReferenceDTO, len(verses))
 	for i, v := range verses {
 		verseList[i] = ReferenceDTO{
@@ -103,13 +104,20 @@ func VerseServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	WriteHttpJson(verseList, w)
+	verseMap["Verses"] = verseList
+
+	WriteHttpJson(verseMap, w)
 }
 
 func main() {
-	// example usage: http://127.0.1:777/verse?ref=Genesis%201:1-3
+	// example usage: http://127.0.1:7777/verse?ref=Genesis%201:1-3
 	http.HandleFunc("/verse", VerseServeHTTP)
-	fmt.Println("Starting [/verse] endpoint on :7777...")
+	// health check endpoint http://127.0.1:7777/health
+	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("OK"))
+	})
+	fmt.Println("Starting [/health] & [/verse] endpoints on :7777...")
 	if err := http.ListenAndServe(":7777", nil); err != nil {
 		log.Fatalf("failed to start server: %v\n", err)
 	}

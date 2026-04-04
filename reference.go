@@ -60,7 +60,7 @@ func (g *GoBible) ParseReference(reference string) (References, error) {
 		// nix this off the end of the parts slice
 		parts = parts[:len(parts)-1]
 
-		for t, _ := range g.bibles {
+		for t := range g.bibles {
 			if strings.ToLower(t) == potentialTranslation {
 				translation = t
 				break
@@ -125,9 +125,6 @@ func (g *GoBible) ParseReference(reference string) (References, error) {
 	} else {
 		endChapter = startChapter
 		endVerse = startVerse
-		if err != nil {
-			return nil, err
-		}
 	}
 
 	if startChapter > endChapter {
@@ -170,6 +167,7 @@ func (g *GoBible) ParseReference(reference string) (References, error) {
 				VerseRef:    b.GetBook(book).GetChapter(chapter).GetVerse(verse),
 			}
 			references = append(references, ref)
+			log.Println("ref", ref.String())
 		}
 	}
 

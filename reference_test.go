@@ -6,6 +6,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+//TODO, confirm that we are handling "verse gaps" correctly (e.g. Genesis 1:1-3, 5-7) multiple verses in same chapter (with skips)
+
 func TestParseReference(t *testing.T) {
 	b := NewGoBible()
 	b.LoadFormat("data/WEB.xml", "osis")
